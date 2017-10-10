@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Microsoft.Extensions.Diagnostics.HealthChecks.Test
+namespace Microsoft.Extensions.Diagnostics.HealthChecks.Tests
 {
-    public class ServiceCollectionExtensionsTest
+    public class ServiceCollectionExtensionsTests
     {
         [Fact]
         public void AddHealthChecks_RegistersSingletonHealthCheckServiceIdempotently()

@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Microsoft.Extensions.Diagnostics.HealthChecks.Test
+namespace Microsoft.Extensions.Diagnostics.HealthChecks.Tests
 {
     public class HealthChecksBuilderTests
     {

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Xunit;
 
-namespace Microsoft.Extensions.Diagnostics.HealthChecks.Test
+namespace Microsoft.Extensions.Diagnostics.HealthChecks.Tests
 {
-    public class CompositeHealthCheckResultTest
+    public class CompositeHealthCheckResultTests
     {
         [Theory]
         [InlineData(HealthCheckStatus.Healthy)]
