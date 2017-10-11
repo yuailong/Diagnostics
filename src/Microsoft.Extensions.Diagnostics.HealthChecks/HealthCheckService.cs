@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Microsoft.Extensions.Diagnostics.HealthChecks
 {
     /// <summary>
-    /// Default implementation of <see cref="IHealthCheckService"/>
+    /// Default implementation of <see cref="IHealthCheckService"/>.
     /// </summary>
     public class HealthCheckService : IHealthCheckService
     {
@@ -72,7 +72,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// <summary>
         /// Runs all the health checks in the application and returns the aggregated status.
         /// </summary>
-        /// <param name="cancellationToken">A <see cref="CancellationToken"/> which can be used to cancel the health checks</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> which can be used to cancel the health checks.</param>
         /// <returns>
         /// A <see cref="Task{T}"/> which will complete when all the health checks have been run,
         /// yielding a <see cref="CompositeHealthCheckResult"/> containing the results.

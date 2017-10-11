@@ -8,7 +8,7 @@ using System.Diagnostics;
 namespace Microsoft.Extensions.Diagnostics.HealthChecks
 {
     /// <summary>
-    /// Represents the results of multiple health checks
+    /// Represents the results of multiple health checks.
     /// </summary>
     public class CompositeHealthCheckResult
     {
@@ -32,7 +32,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         public HealthCheckStatus Status { get; }
 
         /// <summary>
-        /// Create a new <see cref="CompositeHealthCheckResult"/> from the specified results
+        /// Create a new <see cref="CompositeHealthCheckResult"/> from the specified results.
         /// </summary>
         /// <param name="results">A <see cref="IReadOnlyDictionary{TKey, T}"/> containing the results from each health check.</param>
         public CompositeHealthCheckResult(IReadOnlyDictionary<string, HealthCheckResult> results)

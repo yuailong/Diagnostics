@@ -26,7 +26,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The <see cref="IHealthChecksBuilder"/> to add the check to.</param>
         /// <param name="name">The name of the health check, which should indicate the component being checked.</param>
         /// <param name="check">A delegate which provides the code to execute when the health check is run.</param>
-        /// <returns>The <see cref="IHealthChecksBuilder"/></returns>
+        /// <returns>The <see cref="IHealthChecksBuilder"/>.</returns>
         public static IHealthChecksBuilder AddCheck(this IHealthChecksBuilder builder, string name, Func<CancellationToken, Task<HealthCheckResult>> check)
         {
             builder.Services.AddSingleton<IHealthCheck>(services => new HealthCheck(name, check));
@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">The <see cref="IHealthChecksBuilder"/> to add the check to.</param>
         /// <param name="name">The name of the health check, which should indicate the component being checked.</param>
         /// <param name="check">A delegate which provides the code to execute when the health check is run.</param>
-        /// <returns>The <see cref="IHealthChecksBuilder"/></returns>
+        /// <returns>The <see cref="IHealthChecksBuilder"/>.</returns>
         public static IHealthChecksBuilder AddCheck(this IHealthChecksBuilder builder, string name, Func<Task<HealthCheckResult>> check) =>
             builder.AddCheck(name, _ => check());
     }

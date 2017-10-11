@@ -30,12 +30,12 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         public Exception Exception { get; }
 
         /// <summary>
-        /// Gets a human-readable description of the status of the component that was checked
+        /// Gets a human-readable description of the status of the component that was checked.
         /// </summary>
         public string Description => _description ?? string.Empty;
 
         /// <summary>
-        /// Gets additional key-value pairs describing the health of the component
+        /// Gets additional key-value pairs describing the health of the component.
         /// </summary>
         public IReadOnlyDictionary<string, object> Data => _data ?? _emptyReadOnlyDictionary;
 
@@ -44,9 +44,9 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// <paramref name="description"/>, and <paramref name="data"/>.
         /// </summary>
         /// <param name="status">A <see cref="HealthCheckStatus"/> value indicating the status of the component that was checked.</param>
-        /// <param name="exception">An <see cref="Exception"/> representing the exception that was thrown when checking for status (if any)</param>
+        /// <param name="exception">An <see cref="Exception"/> representing the exception that was thrown when checking for status (if any).</param>
         /// <param name="description">A human-readable description of the status of the component that was checked.</param>
-        /// <param name="data">Additional key-value pairs describing the health of the component</param>
+        /// <param name="data">Additional key-value pairs describing the health of the component.</param>
         public HealthCheckResult(HealthCheckStatus status, Exception exception, string description, IReadOnlyDictionary<string, object> data)
         {
             if (status == HealthCheckStatus.Unknown)
@@ -80,7 +80,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// </summary>
         /// <returns>A <see cref="HealthCheckResult"/> representing an unhealthy component.</returns>
         /// <param name="description">A human-readable description of the status of the component that was checked.</param>
-        /// <param name="data">Additional key-value pairs describing the health of the component</param>
+        /// <param name="data">Additional key-value pairs describing the health of the component.</param>
         public static HealthCheckResult Unhealthy(string description, IReadOnlyDictionary<string, object> data)
             => new HealthCheckResult(HealthCheckStatus.Unhealthy, exception: null, description: description, data: data);
 
@@ -88,7 +88,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// Creates a <see cref="HealthCheckResult"/> representing an unhealthy component.
         /// </summary>
         /// <returns>A <see cref="HealthCheckResult"/> representing an unhealthy component.</returns>
-        /// <param name="exception">An <see cref="Exception"/> representing the exception that was thrown when checking for status (if any)</param>
+        /// <param name="exception">An <see cref="Exception"/> representing the exception that was thrown when checking for status (if any).</param>
         public static HealthCheckResult Unhealthy(Exception exception)
             => new HealthCheckResult(HealthCheckStatus.Unhealthy, exception, description: string.Empty, data: null);
 
@@ -97,7 +97,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// </summary>
         /// <returns>A <see cref="HealthCheckResult"/> representing an unhealthy component.</returns>
         /// <param name="description">A human-readable description of the status of the component that was checked.</param>
-        /// <param name="exception">An <see cref="Exception"/> representing the exception that was thrown when checking for status (if any)</param>
+        /// <param name="exception">An <see cref="Exception"/> representing the exception that was thrown when checking for status (if any).</param>
         public static HealthCheckResult Unhealthy(string description, Exception exception)
             => new HealthCheckResult(HealthCheckStatus.Unhealthy, exception, description, data: null);
 
@@ -106,8 +106,8 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// </summary>
         /// <returns>A <see cref="HealthCheckResult"/> representing an unhealthy component.</returns>
         /// <param name="description">A human-readable description of the status of the component that was checked.</param>
-        /// <param name="exception">An <see cref="Exception"/> representing the exception that was thrown when checking for status (if any)</param>
-        /// <param name="data">Additional key-value pairs describing the health of the component</param>
+        /// <param name="exception">An <see cref="Exception"/> representing the exception that was thrown when checking for status (if any).</param>
+        /// <param name="data">Additional key-value pairs describing the health of the component.</param>
         public static HealthCheckResult Unhealthy(string description, Exception exception, IReadOnlyDictionary<string, object> data)
             => new HealthCheckResult(HealthCheckStatus.Unhealthy, exception, description, data);
 
@@ -131,7 +131,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// </summary>
         /// <returns>A <see cref="HealthCheckResult"/> representing a healthy component.</returns>
         /// <param name="description">A human-readable description of the status of the component that was checked.</param>
-        /// <param name="data">Additional key-value pairs describing the health of the component</param>
+        /// <param name="data">Additional key-value pairs describing the health of the component.</param>
         public static HealthCheckResult Healthy(string description, IReadOnlyDictionary<string, object> data)
             => new HealthCheckResult(HealthCheckStatus.Healthy, exception: null, description: description, data: data);
 
@@ -155,7 +155,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// </summary>
         /// <returns>A <see cref="HealthCheckResult"/> representing a component in a degraded state.</returns>
         /// <param name="description">A human-readable description of the status of the component that was checked.</param>
-        /// <param name="data">Additional key-value pairs describing the health of the component</param>
+        /// <param name="data">Additional key-value pairs describing the health of the component.</param>
         public static HealthCheckResult Degraded(string description, IReadOnlyDictionary<string, object> data)
             => new HealthCheckResult(HealthCheckStatus.Degraded, exception: null, description: description, data: data);
 
@@ -171,7 +171,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// </summary>
         /// <returns>A <see cref="HealthCheckResult"/> representing a component in a degraded state.</returns>
         /// <param name="description">A human-readable description of the status of the component that was checked.</param>
-        /// <param name="exception">An <see cref="Exception"/> representing the exception that was thrown when checking for status (if any)</param>
+        /// <param name="exception">An <see cref="Exception"/> representing the exception that was thrown when checking for status (if any).</param>
         public static HealthCheckResult Degraded(string description, Exception exception)
             => new HealthCheckResult(HealthCheckStatus.Degraded, exception, description, data: null);
 
@@ -180,8 +180,8 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// </summary>
         /// <returns>A <see cref="HealthCheckResult"/> representing a component in a degraded state.</returns>
         /// <param name="description">A human-readable description of the status of the component that was checked.</param>
-        /// <param name="exception">An <see cref="Exception"/> representing the exception that was thrown when checking for status (if any)</param>
-        /// <param name="data">Additional key-value pairs describing the health of the component</param>
+        /// <param name="exception">An <see cref="Exception"/> representing the exception that was thrown when checking for status (if any).</param>
+        /// <param name="data">Additional key-value pairs describing the health of the component.</param>
         public static HealthCheckResult Degraded(string description, Exception exception, IReadOnlyDictionary<string, object> data)
             => new HealthCheckResult(HealthCheckStatus.Degraded, exception, description, data);
     }
