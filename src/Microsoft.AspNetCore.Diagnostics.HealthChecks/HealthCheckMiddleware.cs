@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -16,10 +17,10 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks
         private readonly HealthCheckOptions _healthCheckOptions;
         private readonly IHealthCheckService _healthCheckService;
 
-        public HealthCheckMiddleware(RequestDelegate next, HealthCheckOptions healthCheckOptions, IHealthCheckService healthCheckService)
+        public HealthCheckMiddleware(RequestDelegate next, IOptions<HealthCheckOptions> healthCheckOptions, IHealthCheckService healthCheckService)
         {
             _next = next;
-            _healthCheckOptions = healthCheckOptions;
+            _healthCheckOptions = healthCheckOptions.Value;
             _healthCheckService = healthCheckService;
         }
 
@@ -30,7 +31,6 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks
         /// <returns></returns>
         public async Task InvokeAsync(HttpContext context)
         {
-            // TODO: Configurable
             if (context.Request.Path == _healthCheckOptions.Path)
             {
                 // TODO: Caching

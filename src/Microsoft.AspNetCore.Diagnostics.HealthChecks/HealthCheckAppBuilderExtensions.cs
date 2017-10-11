@@ -1,7 +1,10 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Builder
 {
@@ -17,10 +20,10 @@ namespace Microsoft.AspNetCore.Builder
         {
             applicationBuilder = applicationBuilder ?? throw new ArgumentNullException(nameof(applicationBuilder));
 
-            return applicationBuilder.UseMiddleware<HealthCheckMiddleware>(new HealthCheckOptions()
+            return applicationBuilder.UseMiddleware<HealthCheckMiddleware>(Options.Create(new HealthCheckOptions()
             {
                 Path = path
-            });
+            }));
         }
     }
 }

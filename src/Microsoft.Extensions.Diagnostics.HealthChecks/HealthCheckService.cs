@@ -41,8 +41,11 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// <param name="logger">A <see cref="ILogger{T}"/> that can be used to log events that occur during health check operations.</param>
         public HealthCheckService(IEnumerable<IHealthCheck> healthChecks, ILogger<HealthCheckService> logger)
         {
+            healthChecks = healthChecks ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
             // Scan the list for duplicate names to provide a better error if there are duplicates.
-            var names = new HashSet<string>();
+            var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var duplicates = new List<string>();
             foreach (var check in healthChecks)
             {
@@ -58,7 +61,6 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
             }
 
             Checks = healthChecks.ToDictionary(c => c.Name);
-            _logger = logger;
 
             if (_logger.IsEnabled(LogLevel.Debug))
             {
@@ -82,6 +84,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
             var results = new Dictionary<string, HealthCheckResult>(Checks.Count);
             foreach (var pair in Checks)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 // If the health check does things like make Database queries using EF or backend HTTP calls,
                 // it may be valuable to know that logs it generates are part of a health check. So we start a scope.
                 using (_logger.BeginScope(new HealthCheckLogScope(pair.Key)))
@@ -96,7 +99,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
                     catch (Exception ex)
                     {
                         // We don't log this as an error because a health check failing shouldn't bring down the active task.
-                        _logger.LogTrace(ex, "Health check '{healthCheckName}' threw an unexpected exception", pair.Key);
+                        _logger.LogDebug(ex, "Health check '{healthCheckName}' threw an unexpected exception", pair.Key);
                         result = new HealthCheckResult(HealthCheckStatus.Failed, ex, ex.Message, data: null);
                     }
 
