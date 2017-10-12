@@ -57,7 +57,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
 
             if (duplicates.Count > 0)
             {
-                throw new InvalidOperationException($"Duplicate health checks were registered with the name(s): {string.Join(", ", duplicates)}");
+                throw new ArgumentException($"Duplicate health checks were registered with the name(s): {string.Join(", ", duplicates)}", nameof(healthChecks));
             }
 
             Checks = healthChecks.ToDictionary(c => c.Name);
