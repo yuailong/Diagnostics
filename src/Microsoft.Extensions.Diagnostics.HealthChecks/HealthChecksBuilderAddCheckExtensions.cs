@@ -6,13 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-// This type is used like this:
-//  services.AddHealthChecks()
-//   .AddFoo()
-//   .AddBar()
-//   .AddBaz()
-// As a result, we put it in Microsoft.Extensions.DependencyInjection so the user actually sees the extension methods (since
-// they may not have the Microsoft.Extensions.HealthChecks namespace in their usings).
 namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
