@@ -49,13 +49,13 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
             var duplicates = new List<string>();
             foreach (var check in healthChecks)
             {
-                if(!names.Add(check.Name))
+                if (!names.Add(check.Name))
                 {
                     duplicates.Add(check.Name);
                 }
             }
 
-            if(duplicates.Count > 0)
+            if (duplicates.Count > 0)
             {
                 throw new InvalidOperationException($"Duplicate health checks were registered with the name(s): {string.Join(", ", duplicates)}");
             }
