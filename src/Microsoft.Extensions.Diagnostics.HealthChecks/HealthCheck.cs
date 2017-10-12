@@ -36,6 +36,6 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// </summary>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> that can be used to cancel the health check.</param>
         /// <returns>A <see cref="Task{HealthCheckResult}"/> that completes when the health check has finished, yielding the status of the component being checked.</returns>
-        public Task<HealthCheckResult> CheckStatusAsync(CancellationToken cancellationToken = default) => _check(cancellationToken);
+        public Task<HealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken = default) => _check(cancellationToken);
     }
 }

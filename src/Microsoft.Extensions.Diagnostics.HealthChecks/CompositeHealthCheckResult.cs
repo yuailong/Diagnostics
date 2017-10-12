@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// </summary>
         /// <remarks>
         /// The keys in this dictionary map to the name of the health check, the values are the <see cref="HealthCheckResult"/>
-        /// returned when <see cref="IHealthCheck.CheckStatusAsync(System.Threading.CancellationToken)"/> was called for that health check.
+        /// returned when <see cref="IHealthCheck.CheckHealthAsync(System.Threading.CancellationToken)"/> was called for that health check.
         /// </remarks>
         public IReadOnlyDictionary<string, HealthCheckResult> Results { get; }
 

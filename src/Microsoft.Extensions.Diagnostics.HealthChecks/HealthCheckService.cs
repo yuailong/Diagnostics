@@ -93,7 +93,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
                     try
                     {
                         _logger.LogTrace("Running health check: {healthCheckName}", pair.Key);
-                        result = await pair.Value.CheckStatusAsync(cancellationToken);
+                        result = await pair.Value.CheckHealthAsync(cancellationToken);
                         _logger.LogTrace("Health check '{healthCheckName}' completed with status '{healthCheckStatus}'", pair.Key, result.Status);
                     }
                     catch (Exception ex)
