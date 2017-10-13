@@ -60,7 +60,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
                 throw new ArgumentException($"Duplicate health checks were registered with the name(s): {string.Join(", ", duplicates)}", nameof(healthChecks));
             }
 
-            Checks = healthChecks.ToDictionary(c => c.Name);
+            Checks = healthChecks.ToDictionary(c => c.Name, StringComparer.OrdinalIgnoreCase);
 
             if (_logger.IsEnabled(LogLevel.Debug))
             {
