@@ -81,7 +81,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// </returns>
         public async Task<CompositeHealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken = default)
         {
-            var results = new Dictionary<string, HealthCheckResult>(Checks.Count);
+            var results = new Dictionary<string, HealthCheckResult>(Checks.Count, StringComparer.OrdinalIgnoreCase);
             foreach (var pair in Checks)
             {
                 cancellationToken.ThrowIfCancellationRequested();
