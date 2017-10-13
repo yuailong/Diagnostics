@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Diagnostics.HealthChecks.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -79,27 +78,39 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// A <see cref="Task{T}"/> which will complete when all the health checks have been run,
         /// yielding a <see cref="CompositeHealthCheckResult"/> containing the results.
         /// </returns>
-        public async Task<CompositeHealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken = default)
+        public Task<CompositeHealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken = default) =>
+            CheckHealthAsync(Checks.Values, cancellationToken);
+        
+        /// <summary>
+        /// Runs the provided health checks and returns the aggregated status
+        /// </summary>
+        /// <param name="checks">The <see cref="IHealthCheck"/> instances to be run.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> which can be used to cancel the health checks.</param>
+        /// <returns>
+        /// A <see cref="Task{T}"/> which will complete when all the health checks have been run,
+        /// yielding a <see cref="CompositeHealthCheckResult"/> containing the results.
+        /// </returns>
+        public async Task<CompositeHealthCheckResult> CheckHealthAsync(IEnumerable<IHealthCheck> checks, CancellationToken cancellationToken = default)
         {
             var results = new Dictionary<string, HealthCheckResult>(Checks.Count, StringComparer.OrdinalIgnoreCase);
-            foreach (var pair in Checks)
+            foreach (var check in checks)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 // If the health check does things like make Database queries using EF or backend HTTP calls,
                 // it may be valuable to know that logs it generates are part of a health check. So we start a scope.
-                using (_logger.BeginScope(new HealthCheckLogScope(pair.Key)))
+                using (_logger.BeginScope(new HealthCheckLogScope(check.Name)))
                 {
                     HealthCheckResult result;
                     try
                     {
-                        _logger.LogTrace("Running health check: {healthCheckName}", pair.Key);
-                        result = await pair.Value.CheckHealthAsync(cancellationToken);
-                        _logger.LogTrace("Health check '{healthCheckName}' completed with status '{healthCheckStatus}'", pair.Key, result.Status);
+                        _logger.LogTrace("Running health check: {healthCheckName}", check.Name);
+                        result = await check.CheckHealthAsync(cancellationToken);
+                        _logger.LogTrace("Health check '{healthCheckName}' completed with status '{healthCheckStatus}'", check.Name, result.Status);
                     }
                     catch (Exception ex)
                     {
                         // We don't log this as an error because a health check failing shouldn't bring down the active task.
-                        _logger.LogDebug(ex, "Health check '{healthCheckName}' threw an unexpected exception", pair.Key);
+                        _logger.LogError(ex, "Health check '{healthCheckName}' threw an unexpected exception", check.Name);
                         result = new HealthCheckResult(HealthCheckStatus.Failed, ex, ex.Message, data: null);
                     }
 
@@ -107,12 +118,12 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
                     if (result.Status == HealthCheckStatus.Unknown)
                     {
                         // This is different from the case above. We throw here because a health check is doing something specifically incorrect.
-                        var exception = new InvalidOperationException($"Health check '{pair.Key}' returned a result with a status of Unknown");
-                        _logger.LogError(exception, "Health check '{healthCheckName}' returned a result with a status of Unknown", pair.Key);
+                        var exception = new InvalidOperationException($"Health check '{check.Name}' returned a result with a status of Unknown");
+                        _logger.LogError(exception, "Health check '{healthCheckName}' returned a result with a status of Unknown", check.Name);
                         throw exception;
                     }
 
-                    results[pair.Key] = result;
+                    results[check.Name] = result;
                 }
             }
             return new CompositeHealthCheckResult(results);

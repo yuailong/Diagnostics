@@ -5,16 +5,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Microsoft.Extensions.Diagnostics.HealthChecks.Internal
+namespace Microsoft.Extensions.Diagnostics.HealthChecks
 {
-    /// <summary>
-    /// Represents a logging scope for a health check. This type is not designed for use in application code.
-    /// </summary>
-    public class HealthCheckLogScope : IReadOnlyList<KeyValuePair<string, object>>
+    internal class HealthCheckLogScope : IReadOnlyList<KeyValuePair<string, object>>
     {
-        /// <summary>
-        /// Gets the name of the health check being executed.
-        /// </summary>
         public string HealthCheckName { get; }
 
         int IReadOnlyCollection<KeyValuePair<string, object>>.Count { get; } = 1;

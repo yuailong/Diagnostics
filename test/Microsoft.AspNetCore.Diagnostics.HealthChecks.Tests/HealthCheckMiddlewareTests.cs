@@ -13,12 +13,15 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Microsoft.AspNetCore.Diagnostics.HealthChecks.Tests
+namespace Microsoft.AspNetCore.Diagnostics.HealthChecks
 {
     public class HealthCheckMiddlewareTests
     {
-        [Fact]
-        public async Task IgnoresRequestThatDoesNotMatchPath()
+        [Theory]
+        [InlineData("/frob")]  
+        [InlineData("/HEALTH")] // Match is case-sensitive, for now at least 
+        [InlineData("/health/")] // Match is exact, for now at least
+        public async Task IgnoresRequestThatDoesNotMatchPath(string requestPath)
         {
             var builder = new WebHostBuilder()
                 .Configure(app =>
@@ -32,8 +35,8 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks.Tests
             var server = new TestServer(builder);
             var client = server.CreateClient();
 
-            var resp = await client.GetAsync("/frob");
-            Assert.Equal(HttpStatusCode.NotFound, resp.StatusCode);
+            var response = await client.GetAsync(requestPath);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -57,9 +60,9 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks.Tests
             var server = new TestServer(builder);
             var client = server.CreateClient();
 
-            var resp = await client.GetAsync("/health");
+            var response = await client.GetAsync("/health");
 
-            var result = await resp.Content.ReadAsStringAsync();
+            var result = await response.Content.ReadAsStringAsync();
             Assert.Equal(expectedJson, result);
         }
 
@@ -117,9 +120,9 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks.Tests
             var server = new TestServer(builder);
             var client = server.CreateClient();
 
-            var resp = await client.GetAsync("/health");
+            var response = await client.GetAsync("/health");
 
-            var result = await resp.Content.ReadAsStringAsync();
+            var result = await response.Content.ReadAsStringAsync();
             Assert.Equal(expectedJson, result);
         }
 
@@ -138,9 +141,9 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks.Tests
             var server = new TestServer(builder);
             var client = server.CreateClient();
 
-            var resp = await client.GetAsync("/health");
+            var response = await client.GetAsync("/health");
 
-            Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -161,9 +164,9 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks.Tests
             var server = new TestServer(builder);
             var client = server.CreateClient();
 
-            var resp = await client.GetAsync("/health");
+            var response = await client.GetAsync("/health");
 
-            Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -184,9 +187,9 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks.Tests
             var server = new TestServer(builder);
             var client = server.CreateClient();
 
-            var resp = await client.GetAsync("/health");
+            var response = await client.GetAsync("/health");
 
-            Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -207,9 +210,9 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks.Tests
             var server = new TestServer(builder);
             var client = server.CreateClient();
 
-            var resp = await client.GetAsync("/health");
+            var response = await client.GetAsync("/health");
 
-            Assert.Equal(HttpStatusCode.ServiceUnavailable, resp.StatusCode);
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         }
 
         [Fact]
@@ -230,9 +233,9 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks.Tests
             var server = new TestServer(builder);
             var client = server.CreateClient();
 
-            var resp = await client.GetAsync("/health");
+            var response = await client.GetAsync("/health");
 
-            Assert.Equal(HttpStatusCode.InternalServerError, resp.StatusCode);
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         }
     }
 }

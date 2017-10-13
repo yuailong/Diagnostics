@@ -4,7 +4,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Microsoft.Extensions.Diagnostics.HealthChecks.Tests
+namespace Microsoft.Extensions.Diagnostics.HealthChecks
 {
     public class ServiceCollectionExtensionsTests
     {

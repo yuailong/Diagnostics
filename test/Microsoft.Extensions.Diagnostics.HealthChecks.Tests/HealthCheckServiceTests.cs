@@ -4,12 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Diagnostics.HealthChecks.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Testing;
 using Xunit;
 
-namespace Microsoft.Extensions.Diagnostics.HealthChecks.Tests
+namespace Microsoft.Extensions.Diagnostics.HealthChecks
 {
     public class HealthCheckServiceTests
     {
@@ -46,10 +45,10 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks.Tests
             };
 
             // Act
-            var exception = Assert.Throws<InvalidOperationException>(() => new HealthCheckService(checks));
+            var exception = Assert.Throws<ArgumentException>(() => new HealthCheckService(checks));
 
             // Assert
-            Assert.Equal("Duplicate health checks were registered with the name(s): Foo, Baz", exception.Message);
+            Assert.Equal($"Duplicate health checks were registered with the name(s): Foo, Baz{Environment.NewLine}Parameter name: healthChecks", exception.Message);
         }
 
         [Fact]
@@ -115,6 +114,55 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks.Tests
         }
 
         [Fact]
+        public async Task CheckAsync_RunsProvidedChecksAndAggregatesResultsAsync()
+        {
+            const string DataKey = "Foo";
+            const string DataValue = "Bar";
+            const string DegradedMessage = "I'm not feeling so good";
+            const string UnhealthyMessage = "Halp!";
+            const string HealthyMessage = "Everything is A-OK";
+            var exception = new Exception("Things are pretty bad!");
+
+            // Arrange
+            var data = new Dictionary<string, object>
+            {
+                { DataKey, DataValue }
+            };
+
+            var healthyCheck = new HealthCheck("HealthyCheck", _ => Task.FromResult(HealthCheckResult.Healthy(HealthyMessage, data)));
+            var degradedCheck = new HealthCheck("DegradedCheck", _ => Task.FromResult(HealthCheckResult.Degraded(DegradedMessage)));
+            var unhealthyCheck = new HealthCheck("UnhealthyCheck", _ => Task.FromResult(HealthCheckResult.Unhealthy(UnhealthyMessage, exception)));
+
+            var service = new HealthCheckService(new[]
+            {
+                healthyCheck,
+                degradedCheck,
+                unhealthyCheck,
+            });
+
+            // Act
+            var results = await service.CheckHealthAsync(new[]
+            {
+                service.Checks["HealthyCheck"]
+            });
+
+            // Assert
+            Assert.Collection(results.Results,
+                actual =>
+                {
+                    Assert.Equal(healthyCheck.Name, actual.Key);
+                    Assert.Equal(HealthyMessage, actual.Value.Description);
+                    Assert.Equal(HealthCheckStatus.Healthy, actual.Value.Status);
+                    Assert.Null(actual.Value.Exception);
+                    Assert.Collection(actual.Value.Data, item =>
+                    {
+                        Assert.Equal(DataKey, item.Key);
+                        Assert.Equal(DataValue, item.Value);
+                    });
+                });
+        }
+
+        [Fact]
         public async Task CheckHealthAsync_ConvertsExceptionInHealthCheckerToFailedResultAsync()
         {
             // Arrange
@@ -166,8 +214,12 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks.Tests
                     actual =>
                     {
                         Assert.Equal(actual.LoggerName, typeof(HealthCheckService).FullName);
-                        var scope = Assert.IsType<HealthCheckLogScope>(actual.Scope);
-                        Assert.Equal("TestScope", scope.HealthCheckName);
+                        Assert.Collection((IEnumerable<KeyValuePair<string, object>>)actual.Scope,
+                            item =>
+                            {
+                                Assert.Equal("HealthCheckName", item.Key);
+                                Assert.Equal("TestScope", item.Value);
+                            });
                     });
                 return Task.FromResult(HealthCheckResult.Healthy());
             });

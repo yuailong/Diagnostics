@@ -30,5 +30,17 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// yielding a <see cref="CompositeHealthCheckResult"/> containing the results.
         /// </returns>
         Task<CompositeHealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Runs the provided health checks and returns the aggregated status
+        /// </summary>
+        /// <param name="checks">The <see cref="IHealthCheck"/> instances to be run.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> which can be used to cancel the health checks.</param>
+        /// <returns>
+        /// A <see cref="Task{T}"/> which will complete when all the health checks have been run,
+        /// yielding a <see cref="CompositeHealthCheckResult"/> containing the results.
+        /// </returns>
+        Task<CompositeHealthCheckResult> CheckHealthAsync(IEnumerable<IHealthCheck> checks,
+            CancellationToken cancellationToken = default);
     }
 }
