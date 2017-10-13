@@ -1,6 +1,7 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -53,7 +54,9 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks
                         context.Response.StatusCode = StatusCodes.Status200OK;
                         break;
                     default:
-                        break;
+                        // This will only happen when we change HealthCheckStatus and we don't update this.
+                        Debug.Fail($"Unrecognized HealthCheckStatus value: {result.Status}");
+                        throw new InvalidOperationException($"Unrecognized HealthCheckStatus value: {result.Status}");
                 }
 
                 // Render results to JSON
