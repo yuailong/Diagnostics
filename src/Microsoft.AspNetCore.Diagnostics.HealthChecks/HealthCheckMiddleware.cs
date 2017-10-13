@@ -33,7 +33,6 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks
         {
             if (context.Request.Path == _healthCheckOptions.Path)
             {
-                // TODO: Caching
                 // Get results
                 var result = await _healthCheckService.CheckHealthAsync(context.RequestAborted);
 
@@ -41,7 +40,6 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks
                 switch (result.Status)
                 {
                     case HealthCheckStatus.Failed:
-                        // REVIEW: Maybe we shouldn't distinguish between failed health checks and unhealthy?
                         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                         break;
                     case HealthCheckStatus.Unhealthy:
@@ -59,7 +57,6 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks
                 }
 
                 // Render results to JSON
-                // TODO: Authentication policy to control this? Sensitive data hiding? etc.
                 var json = new JObject(
                     new JProperty("status", result.Status.ToString()),
                     new JProperty("results", new JObject(result.Results.Select(pair =>
