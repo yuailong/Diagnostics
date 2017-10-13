@@ -19,7 +19,6 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks
     {
         [Theory]
         [InlineData("/frob")]  
-        [InlineData("/HEALTH")] // Match is case-sensitive, for now at least 
         [InlineData("/health/")] // Match is exact, for now at least
         public async Task IgnoresRequestThatDoesNotMatchPath(string requestPath)
         {
@@ -39,8 +38,11 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact]
-        public async Task ReturnsEmptyHealthyRequestIfNoHealthChecksRegistered()
+        [Theory]
+        [InlineData("/health")]
+        [InlineData("/Health")]
+        [InlineData("/HEALTH")]
+        public async Task ReturnsEmptyHealthyRequestIfNoHealthChecksRegistered(string requestPath)
         {
             var expectedJson = JsonConvert.SerializeObject(new
             {
@@ -60,7 +62,7 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks
             var server = new TestServer(builder);
             var client = server.CreateClient();
 
-            var response = await client.GetAsync("/health");
+            var response = await client.GetAsync(requestPath);
 
             var result = await response.Content.ReadAsStringAsync();
             Assert.Equal(expectedJson, result);
