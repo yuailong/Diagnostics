@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
     /// A simple implementation of <see cref="IHealthCheck"/> which uses a provided delegate to
     /// implement the check.
     /// </summary>
-    public class HealthCheck : IHealthCheck
+    public sealed class HealthCheck : IHealthCheck
     {
         private readonly Func<CancellationToken, Task<HealthCheckResult>> _check;
 
