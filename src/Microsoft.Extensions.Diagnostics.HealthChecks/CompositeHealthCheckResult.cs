@@ -1,9 +1,7 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Microsoft.Extensions.Diagnostics.HealthChecks
 {
@@ -13,7 +11,17 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
     public class CompositeHealthCheckResult
     {
         /// <summary>
-        /// A <see cref="IReadOnlyDictionary{TKey, T}"/> containing the results from each health check.
+        /// Create a new <see cref="CompositeHealthCheckResult"/> from the specified results.
+        /// </summary>
+        /// <param name="results">A <see cref="IReadOnlyDictionary{TKey, T}"/> containing the results from each health check.</param>
+        public CompositeHealthCheckResult(IReadOnlyDictionary<string, HealthCheckResult> results)
+        {
+            Results = results;
+            Status = CalculateAggregateStatus(results.Values);
+        }
+
+        /// <summary>
+        /// A <see cref="IReadOnlyDictionary{String, HealthCheckResult}"/> containing the results from each health check.
         /// </summary>
         /// <remarks>
         /// The keys in this dictionary map to the name of the health check, the values are the <see cref="HealthCheckResult"/>
@@ -31,17 +39,7 @@ namespace Microsoft.Extensions.Diagnostics.HealthChecks
         /// </remarks>
         public HealthCheckStatus Status { get; }
 
-        /// <summary>
-        /// Create a new <see cref="CompositeHealthCheckResult"/> from the specified results.
-        /// </summary>
-        /// <param name="results">A <see cref="IReadOnlyDictionary{TKey, T}"/> containing the results from each health check.</param>
-        public CompositeHealthCheckResult(IReadOnlyDictionary<string, HealthCheckResult> results)
-        {
-            Results = results;
-            Status = CalculateAggregateStatus(results.Values);
-        }
-
-        private HealthCheckStatus CalculateAggregateStatus(IEnumerable<HealthCheckResult> results)
+        private static HealthCheckStatus CalculateAggregateStatus(IEnumerable<HealthCheckResult> results)
         {
             // This is basically a Min() check, but we know the possible range, so we don't need to walk the whole list
             var currentValue = HealthCheckStatus.Healthy;

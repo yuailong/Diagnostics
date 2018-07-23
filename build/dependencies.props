@@ -16,6 +16,7 @@
     <MicrosoftEntityFrameworkCoreInMemoryPackageVersion>2.2.0-preview1-34755</MicrosoftEntityFrameworkCoreInMemoryPackageVersion>
     <MicrosoftEntityFrameworkCoreRelationalPackageVersion>2.2.0-preview1-34755</MicrosoftEntityFrameworkCoreRelationalPackageVersion>
     <MicrosoftEntityFrameworkCoreSqlServerPackageVersion>2.2.0-preview1-34755</MicrosoftEntityFrameworkCoreSqlServerPackageVersion>
+    <MicrosoftExtensionsConfigurationCommandLinePackageVersion>2.2.0-preview1-34755</MicrosoftExtensionsConfigurationCommandLinePackageVersion>
     <MicrosoftExtensionsDependencyInjectionAbstractionsPackageVersion>2.2.0-preview1-34755</MicrosoftExtensionsDependencyInjectionAbstractionsPackageVersion>
     <MicrosoftExtensionsDependencyInjectionPackageVersion>2.2.0-preview1-34755</MicrosoftExtensionsDependencyInjectionPackageVersion>
     <MicrosoftExtensionsDiagnosticAdapterPackageVersion>2.2.0-preview1-34755</MicrosoftExtensionsDiagnosticAdapterPackageVersion>

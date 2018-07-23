@@ -19,7 +19,10 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks
         private readonly HealthCheckOptions _healthCheckOptions;
         private readonly IHealthCheckService _healthCheckService;
 
-        public HealthCheckMiddleware(RequestDelegate next, IOptions<HealthCheckOptions> healthCheckOptions, IHealthCheckService healthCheckService)
+        public HealthCheckMiddleware(
+            RequestDelegate next,
+            IOptions<HealthCheckOptions> healthCheckOptions,
+            IHealthCheckService healthCheckService)
         {
             _next = next;
             _healthCheckOptions = healthCheckOptions.Value;
@@ -27,52 +30,47 @@ namespace Microsoft.AspNetCore.Diagnostics.HealthChecks
         }
 
         /// <summary>
-        /// Process an individual request.
+        /// Processes a request.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="httpContext"></param>
         /// <returns></returns>
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext httpContext)
         {
-            if (context.Request.Path == _healthCheckOptions.Path)
+            if (httpContext.Request.Path != _healthCheckOptions.Path)
             {
-                // Get results
-                var result = await _healthCheckService.CheckHealthAsync(context.RequestAborted);
-
-                // Map status to response code
-                switch (result.Status)
-                {
-                    case HealthCheckStatus.Failed:
-                        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                        break;
-                    case HealthCheckStatus.Unhealthy:
-                        context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                        break;
-                    case HealthCheckStatus.Degraded:
-                        // Degraded doesn't mean unhealthy so we return 200, but the content will contain more details
-                        context.Response.StatusCode = StatusCodes.Status200OK;
-                        break;
-                    case HealthCheckStatus.Healthy:
-                        context.Response.StatusCode = StatusCodes.Status200OK;
-                        break;
-                    default:
-                        // This will only happen when we change HealthCheckStatus and we don't update this.
-                        Debug.Fail($"Unrecognized HealthCheckStatus value: {result.Status}");
-                        throw new InvalidOperationException($"Unrecognized HealthCheckStatus value: {result.Status}");
-                }
-
-                // Render results to JSON
-                var json = new JObject(
-                    new JProperty("status", result.Status.ToString()),
-                    new JProperty("results", new JObject(result.Results.Select(pair =>
-                        new JProperty(pair.Key, new JObject(
-                            new JProperty("status", pair.Value.Status.ToString()),
-                            new JProperty("description", pair.Value.Description),
-                            new JProperty("data", new JObject(pair.Value.Data.Select(p => new JProperty(p.Key, p.Value))))))))));
-                await context.Response.WriteAsync(json.ToString(Formatting.None));
+                await _next(httpContext);
+                return;
             }
-            else
+
+            // Get results
+            var result = await _healthCheckService.CheckHealthAsync(httpContext.RequestAborted);
+
+            // Map status to response code - this is done before calling the response writer
+            // this lets the writer customize the status code.
+            switch (result.Status)
             {
-                await _next(context);
+                case HealthCheckStatus.Failed:
+                    httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    break;
+                case HealthCheckStatus.Unhealthy:
+                    httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                    break;
+                case HealthCheckStatus.Degraded:
+                    // Degraded doesn't mean unhealthy so we return 200, but the content will contain more details
+                    httpContext.Response.StatusCode = StatusCodes.Status200OK;
+                    break;
+                case HealthCheckStatus.Healthy:
+                    httpContext.Response.StatusCode = StatusCodes.Status200OK;
+                    break;
+                default:
+                    // This will only happen when we change HealthCheckStatus and we don't update this.
+                    Debug.Fail($"Unrecognized HealthCheckStatus value: {result.Status}");
+                    throw new InvalidOperationException($"Unrecognized HealthCheckStatus value: {result.Status}");
+            }
+
+            if (_healthCheckOptions.ResponseWriter != null)
+            {
+                await _healthCheckOptions.ResponseWriter.WriteResponseAsync(httpContext, result);
             }
         }
     }
